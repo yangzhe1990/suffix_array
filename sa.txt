@@ -1,0 +1,21 @@
+new_orig_pos[i] -> i-th type S* char's position.
+
+new_sa[i] -> i-th small substring's (rel) value // 其实new_sa可以放在sa的后半段，反正这回sa是倒着扫描的。
+new_pattern[i] -> i-th small substring's corresponding char position
+
+/*
+如果sa[new_orig_pos[i]] = i，则new_orig_pos[sa[new_pattern[i]]]就是第i小的字符串的后缀起始字母号。新串i上的值要怎么求？
+ */
+
+sa[new_pattern[i]] = new_sa[i] （then sa[new_orig_pos[i]]就是new_pattern[i]了。） // new_sa现在没用了。 // 如果将new_sa放在sa后半段，这一步就会有问题，因为new_pattern[i]可能会放到new_sa的位置！但是，可以证明new_pattern[i] / 2是互相不同的！这样下面sa[new_orig_pos[i]]就可以替代为sa[new_orig_pos[i] / 2]。
+
+new_pattern[i] = sa[new_orig_pos[i]] 本来是这样的，但是现在要简化new_pattern。于是跑一遍简化步骤出来，得到的是新的sa[new_orig_pos[i]]（被删的标-1，留下的去掉正负分别）。new_orig_pos则去掉被删掉的。
+
+现在仍然可以循环i，根据sa[new_pattern[i]]得到第i小的有没有被删除（正/ -1），根据sa[new_pattern[i]]得知是否跟上一个一样大，从而保存新的sa[new_pattern[i]]。被删掉的保存到new_orig_pos的后面，并将其排名记录到new_sa的后面。然后再new_pattern[i] = sa[new_orig_pos[i]]就得到了新的字符串。
+
+递归的结果在new_sa中。根据被删掉的substring的排名和new_sa其实可以很清楚得排出来顺序，这个顺序可以暂存sa的另外半段（存在前半段了）。然后new_orig_pos[new_sa[i]]插入桶对应的位置（i倒着循环）（由于插入桶的位置是严格递减的，就不会覆盖还未处理的部分。）
+
+问题：把所有S*放到sa的最后，然后排L，是否保证S*不会被L覆盖？好像会…所以就老实搞吧。
+问题2：把所有S*放到sa的前面，然后排L，是否保证S*不会被L覆盖？好像也会…
+
+省内存的缺点就是要先把合并排序的结果写下来，再干活。还有之前的/2。
